@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BM DOT LK Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #ffffff;
+            position: relative; /* Required for absolute positioning of buttons */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #startButton {
+            background-color: #2ecc71;
+            color: #ffffff;
+        }
+
+        #startButton:hover {
+            background-color: #27ae60;
+        }
+
+        #startButton:disabled {
+            background-color: #4a4a4a;
+            cursor: not-allowed;
+        }
+
+        #stopButton {
+            background-color: #e74c3c;
+            color: #ffffff;
+        }
+
+        #stopButton:hover {
+            background-color: #c0392b;
+        }
+
+        #stopButton:disabled {
+            background-color: #4a4a4a;
+            cursor: not-allowed;
+        }
+
+        #copyButton {
+            background-color: #3498db;
+            color: #ffffff;
+        }
+
+        #copyButton:hover {
+            background-color: #2980b9;
+        }
+
+        #copyButton:disabled {
+            background-color: #4a4a4a;
+            cursor: not-allowed;
+        }
+
+        h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        #outputText {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #3d3d3d;
+            border-radius: 5px;
+            resize: vertical;
+            font-size: 1rem;
+            line-height: 1.5;
+            min-height: 200px;
+            background: #1f1f1f;
+            color: #ffffff;
+        }
+
+        #outputText:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        #visualizer {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 2rem;
+            background: #1f1f1f;
+            border-radius: 5px;
+        }
+
+        /* Meme container styling */
+        .meme-container {
+            text-align: center;
+            margin-top: 1rem;
+            display: none; /* Hidden by default */
+        }
+
+        .meme-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Left and Bottom Buttons */
+        .left-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #9b59b6;
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .left-button:hover {
+            background-color: #8e44ad;
+        }
+
+        .bottom-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f1c40f;
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-button:hover {
+            background-color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Button -->
+    <a href="https://www.youtube.com/@HIRANBHANU75" target="_blank">
+        <button class="left-button">Visit YouTube</button>
+    </a>
+
+    <!-- Bottom Button -->
+    <a href="https://www.youtube.com/@HIRANBHANU75" target="_blank">
+        <button class="bottom-button">Visit YouTube</button>
+    </a>
+
+    <div class="container">
+        <div class="logo-container">
+            <a href="#" class="logo">BM DOT LK</a>
+        </div>
+        <h1>Microphone Input: Sinhala Speech to Text</h1>
+        <canvas id="visualizer"></canvas>
+        <div class="button-group">
+            <button id="startButton">Start Recording</button>
+            <button id="stopButton" disabled>Stop Recording</button>
+            <button id="copyButton">Copy Text</button>
+        </div>
+        <h3>Converted Text:</h3>
+        <textarea id="outputText" rows="10" cols="50" readonly></textarea>
+
+        <!-- Meme container -->
+        <div class="meme-container" id="memeContainer">
+            <img src="https://media.tenor.com/5ry-200hErMAAAAd/huh-cat.gif" alt="Funny Meme">
+        </div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const copyButton = document.getElementById('copyButton');
+        const outputText = document.getElementById('outputText');
+        const canvas = document.getElementById('visualizer');
+        const canvasCtx = canvas.getContext('2d');
+        const memeContainer = document.getElementById('memeContainer');
+
+        // Set up canvas size
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let animationId;
+
+        let recognition;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+        } else {
+            alert('Your browser does not support speech recognition. Use Google Chrome.');
+        }
+
+        async function setupAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                draw();
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+            }
+        }
+
+        function draw() {
+            animationId = requestAnimationFrame(draw);
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            analyser.getByteTimeDomainData(dataArray);
+            
+            canvasCtx.fillStyle = '#1f1f1f';
+            canvasCtx.fillRect(0, 0, width, height);
+            
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = '#3498db';
+            canvasCtx.beginPath();
+            
+            const sliceWidth = width / dataArray.length;
+            let x = 0;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * height / 2;
+                
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+                
+                x += sliceWidth;
+            }
+            
+            canvasCtx.lineTo(width, height / 2);
+            canvasCtx.stroke();
+        }
+
+        if (recognition) {
+            recognition.lang = 'si-LK';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onresult = function(event) {
+                let finalTranscript = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    finalTranscript += event.results[i][0].transcript;
+                }
+                outputText.value = finalTranscript;
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+            };
+
+            recognition.onend = function() {
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                if (audioContext) {
+                    audioContext.suspend();
+                }
+            };
+
+            startButton.onclick = async function() {
+                if (!audioContext) {
+                    await setupAudio();
+                } else {
+                    audioContext.resume();
+                }
+                recognition.start();
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            };
+
+            stopButton.onclick = function() {
+                recognition.stop();
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                if (audioContext) {
+                    audioContext.suspend();
+                }
+            };
+
+            copyButton.onclick = function() {
+                outputText.select();
+                document.execCommand('copy');
+
+                // Show the meme
+                memeContainer.style.display = 'block';
+
+                // Change button text
+                copyButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy Text';
+                    memeContainer.style.display = 'none'; // Hide the meme after 2 seconds
+                }, 2000);
+            };
+        }
+    </script>
+</body>
+</html>
